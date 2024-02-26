@@ -6,10 +6,20 @@ const App = () => {
   const { width, height } = useWindowDimensions();
   const bg = useImage(require('./assets/sprites/background-day.png'));
   const bird = useImage(require('./assets/sprites/yellowbird-upflap.png'));
+  const pipe = useImage(require('./assets/sprites/pipe-green.png'));
+  const pipedown = useImage(require('./assets/sprites/pipe-green-top.png'));
   const r = width * 0.33;
   return (
     <Canvas style={{ width, height }}>
       <Image image={bg} width={width} height={height} fit={'cover'} />
+      <Image
+        image={pipe}
+        y={height - 320}
+        x={width / 2}
+        width={104}
+        height={640}
+      />
+      <Image image={pipedown} y={-320} x={width / 2} width={104} height={640} />
       <Image
         image={bird}
         x={width / 4}
