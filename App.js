@@ -1,20 +1,16 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { Canvas, Circle, Group, Image } from '@shopify/react-native-skia';
+import { useWindowDimensions } from 'react-native';
+import { useImage } from '@shopify/react-native-skia';
 
-export default function App() {
+const App = () => {
+  const { width, height } = useWindowDimensions();
+  const bg = useImage(require('./assets/sprites/background-day.png'));
+  const r = width * 0.33;
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Canvas style={{ width, height }}>
+      <Image image={bg} width={width} height={height} fit={'cover'} />
+    </Canvas>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+};
+export default App;
