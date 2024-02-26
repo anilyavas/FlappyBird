@@ -7,7 +7,7 @@ const App = () => {
   const bg = useImage(require('./assets/sprites/background-day.png'));
   const bird = useImage(require('./assets/sprites/yellowbird-upflap.png'));
   const pipe = useImage(require('./assets/sprites/pipe-green.png'));
-  const pipedown = useImage(require('./assets/sprites/pipe-green-top.png'));
+  const pipeTop = useImage(require('./assets/sprites/pipe-green-top.png'));
   const r = width * 0.33;
   return (
     <Canvas style={{ width, height }}>
@@ -19,7 +19,7 @@ const App = () => {
         width={104}
         height={640}
       />
-      <Image image={pipedown} y={-320} x={width / 2} width={104} height={640} />
+      <Image image={pipeTop} y={-320} x={width / 2} width={104} height={640} />
       <Image
         image={bird}
         x={width / 4}
