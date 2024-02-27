@@ -1,7 +1,13 @@
 import { Canvas, Image } from '@shopify/react-native-skia';
 import { useWindowDimensions } from 'react-native';
 import { useImage } from '@shopify/react-native-skia';
-import { useSharedValue, withTiming, Easing } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  withTiming,
+  Easing,
+  withSequence,
+  withRepeat,
+} from 'react-native-reanimated';
 import { useEffect } from 'react';
 
 const App = () => {
@@ -15,7 +21,13 @@ const App = () => {
   const x = useSharedValue(width);
 
   useEffect(() => {
-    x.value = withTiming(-200, { duration: 3000, easing: Easing.linear });
+    x.value = withRepeat(
+      withSequence(
+        withTiming(-150, { duration: 3000, easing: Easing.linear }),
+        withTiming(width, { duration: 0 })
+      ),
+      -1
+    );
   }, []);
 
   const pipeOffset = 0;
@@ -24,6 +36,7 @@ const App = () => {
     <Canvas style={{ width, height }}>
       <Image image={bg} width={width} height={height} fit={'cover'} />
 
+      {/* Pipes */}
       <Image
         image={pipeTop}
         y={pipeOffset - 320}
@@ -38,14 +51,7 @@ const App = () => {
         width={103}
         height={640}
       />
-      <Image
-        image={bird}
-        x={width / 4}
-        y={height / 2 - 24}
-        width={64}
-        height={48}
-        fit={'contain'}
-      />
+      {/* Ground */}
       <Image
         image={base}
         width={width}
@@ -53,6 +59,14 @@ const App = () => {
         y={height - 75}
         x={0}
         fit={'cover'}
+      />
+      <Image
+        image={bird}
+        x={width / 4}
+        y={height / 2 - 24}
+        width={64}
+        height={48}
+        fit={'contain'}
       />
     </Canvas>
   );
