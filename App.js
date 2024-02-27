@@ -16,7 +16,8 @@ import {
 } from 'react-native-reanimated';
 import { useEffect } from 'react';
 
-const GRAVITY = 500;
+const GRAVITY = 1000;
+const JUMP_FORCE = -500;
 
 const App = () => {
   const { width, height } = useWindowDimensions();
@@ -27,7 +28,7 @@ const App = () => {
   const base = useImage(require('./assets/sprites/base.png'));
 
   const x = useSharedValue(width);
-  const birdY = useSharedValue(0);
+  const birdY = useSharedValue(height / 3);
   const birdYVelocity = useSharedValue(100);
 
   useFrameCallback(({ timeSincePreviousFrame: dt }) => {
@@ -49,7 +50,7 @@ const App = () => {
   }, []);
 
   const gesture = Gesture.Tap().onStart(() => {
-    birdYVelocity.value = -300;
+    birdYVelocity.value = JUMP_FORCE;
   });
 
   const pipeOffset = 0;
