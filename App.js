@@ -1,6 +1,10 @@
 import { Canvas, Image } from '@shopify/react-native-skia';
 import { useWindowDimensions } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  GestureDetector,
+  Gesture,
+} from 'react-native-gesture-handler';
 import { useImage } from '@shopify/react-native-skia';
 import {
   useSharedValue,
@@ -44,49 +48,52 @@ const App = () => {
     );
   }, []);
 
+  const gesture = Gesture.Tap().onStart(() => {
+    birdYVelocity.value = -300;
+  });
+
   const pipeOffset = 0;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Canvas
-        style={{ width, height }}
-        onTouch={() => (birdYVelocity.value = -300)}
-      >
-        <Image image={bg} width={width} height={height} fit={'cover'} />
+      <GestureDetector gesture={gesture}>
+        <Canvas style={{ width, height }}>
+          <Image image={bg} width={width} height={height} fit={'cover'} />
 
-        {/* Pipes */}
-        <Image
-          image={pipeTop}
-          y={pipeOffset - 320}
-          x={x}
-          width={103}
-          height={640}
-        />
-        <Image
-          image={pipeBottom}
-          y={height - 320 + pipeOffset}
-          x={x}
-          width={103}
-          height={640}
-        />
-        {/* Ground */}
-        <Image
-          image={base}
-          width={width}
-          height={150}
-          y={height - 75}
-          x={0}
-          fit={'cover'}
-        />
-        <Image
-          image={bird}
-          x={width / 4}
-          y={birdY}
-          width={64}
-          height={48}
-          fit={'contain'}
-        />
-      </Canvas>
+          {/* Pipes */}
+          <Image
+            image={pipeTop}
+            y={pipeOffset - 320}
+            x={x}
+            width={103}
+            height={640}
+          />
+          <Image
+            image={pipeBottom}
+            y={height - 320 + pipeOffset}
+            x={x}
+            width={103}
+            height={640}
+          />
+          {/* Ground */}
+          <Image
+            image={base}
+            width={width}
+            height={150}
+            y={height - 75}
+            x={0}
+            fit={'cover'}
+          />
+          <Image
+            image={bird}
+            x={width / 4}
+            y={birdY}
+            width={64}
+            height={48}
+            fit={'contain'}
+          />
+        </Canvas>
+      </GestureDetector>
     </GestureHandlerRootView>
   );
 };
