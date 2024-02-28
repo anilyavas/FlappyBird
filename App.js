@@ -1,4 +1,4 @@
-import { Canvas, Image } from '@shopify/react-native-skia';
+import { Canvas, Group, Image } from '@shopify/react-native-skia';
 import { useWindowDimensions } from 'react-native';
 import {
   GestureHandlerRootView,
@@ -13,6 +13,8 @@ import {
   withSequence,
   withRepeat,
   useFrameCallback,
+  useDerivedValue,
+  interpolate,
 } from 'react-native-reanimated';
 import { useEffect } from 'react';
 
@@ -29,7 +31,15 @@ const App = () => {
 
   const x = useSharedValue(width);
   const birdY = useSharedValue(height / 3);
-  const birdYVelocity = useSharedValue(100);
+  const birdYVelocity = useSharedValue(0);
+  const birdTransfrom = useDerivedValue(() => {
+    return [
+      { rotate: interpolate(birdYVelocity.value, [-500, 500], [-0.5, 0.5]) },
+    ];
+  });
+  const birdOrigin = useDerivedValue(() => {
+    return { x: width / 4 + 32, y: birdY.value + 24 };
+  });
 
   useFrameCallback(({ timeSincePreviousFrame: dt }) => {
     if (!dt) {
@@ -85,14 +95,16 @@ const App = () => {
             x={0}
             fit={'cover'}
           />
-          <Image
-            image={bird}
-            x={width / 4}
-            y={birdY}
-            width={64}
-            height={48}
-            fit={'contain'}
-          />
+          <Group transform={birdTransfrom} origin={birdOrigin}>
+            <Image
+              image={bird}
+              x={width / 4}
+              y={birdY}
+              width={64}
+              height={48}
+              fit={'contain'}
+            />
+          </Group>
         </Canvas>
       </GestureDetector>
     </GestureHandlerRootView>
