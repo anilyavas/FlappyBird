@@ -33,6 +33,27 @@ const App = () => {
   const x = useSharedValue(width);
   const birdY = useSharedValue(height / 3);
   const birdYVelocity = useSharedValue(0);
+
+  useEffect(() => {
+    x.value = withRepeat(
+      withSequence(
+        withTiming(-150, { duration: 3000, easing: Easing.linear }),
+        withTiming(width, { duration: 0 })
+      ),
+      -1
+    );
+  }, []);
+  useFrameCallback(({ timeSincePreviousFrame: dt }) => {
+    if (!dt) {
+      return;
+    }
+    birdY.value = birdY.value + (birdYVelocity.value * dt) / 1000;
+    birdYVelocity.value = birdYVelocity.value + (GRAVITY * dt) / 1000;
+  });
+
+  const gesture = Gesture.Tap().onStart(() => {
+    birdYVelocity.value = JUMP_FORCE;
+  });
   const birdTransfrom = useDerivedValue(() => {
     return [
       {
@@ -47,28 +68,6 @@ const App = () => {
   });
   const birdOrigin = useDerivedValue(() => {
     return { x: width / 4 + 32, y: birdY.value + 24 };
-  });
-
-  useFrameCallback(({ timeSincePreviousFrame: dt }) => {
-    if (!dt) {
-      return;
-    }
-    birdY.value = birdY.value + (birdYVelocity.value * dt) / 1000;
-    birdYVelocity.value = birdYVelocity.value + (GRAVITY * dt) / 1000;
-  });
-
-  useEffect(() => {
-    x.value = withRepeat(
-      withSequence(
-        withTiming(-150, { duration: 3000, easing: Easing.linear }),
-        withTiming(width, { duration: 0 })
-      ),
-      -1
-    );
-  }, []);
-
-  const gesture = Gesture.Tap().onStart(() => {
-    birdYVelocity.value = JUMP_FORCE;
   });
 
   const pipeOffset = 0;
