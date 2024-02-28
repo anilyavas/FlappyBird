@@ -16,6 +16,7 @@ import {
   useDerivedValue,
   interpolate,
   Extrapolation,
+  useAnimatedReaction,
 } from 'react-native-reanimated';
 import { useEffect } from 'react';
 
@@ -43,6 +44,22 @@ const App = () => {
       -1
     );
   }, []);
+
+  useAnimatedReaction(
+    () => x.value,
+    (currentValue, previousValue) => {
+      const middle = width / 2;
+      if (
+        currentValue != previousValue &&
+        previousValue &&
+        currentValue <= middle &&
+        previousValue > middle
+      ) {
+        console.log('score ++');
+        //do some
+      }
+    }
+  );
   useFrameCallback(({ timeSincePreviousFrame: dt }) => {
     if (!dt) {
       return;
