@@ -15,6 +15,7 @@ import {
   useFrameCallback,
   useDerivedValue,
   interpolate,
+  Extrapolation,
 } from 'react-native-reanimated';
 import { useEffect } from 'react';
 
@@ -34,7 +35,14 @@ const App = () => {
   const birdYVelocity = useSharedValue(0);
   const birdTransfrom = useDerivedValue(() => {
     return [
-      { rotate: interpolate(birdYVelocity.value, [-500, 500], [-0.5, 0.5]) },
+      {
+        rotate: interpolate(
+          birdYVelocity.value,
+          [-500, 500],
+          [-0.5, 0.5],
+          Extrapolation.CLAMP
+        ),
+      },
     ];
   });
   const birdOrigin = useDerivedValue(() => {
