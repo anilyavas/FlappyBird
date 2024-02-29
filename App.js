@@ -1,11 +1,18 @@
-import { Canvas, Group, Image } from '@shopify/react-native-skia';
-import { useWindowDimensions } from 'react-native';
+import {
+  Canvas,
+  Group,
+  Image,
+  useImage,
+  Text,
+  matchFont,
+  Fill,
+} from '@shopify/react-native-skia';
+import { Platform, useWindowDimensions } from 'react-native';
 import {
   GestureHandlerRootView,
   GestureDetector,
   Gesture,
 } from 'react-native-gesture-handler';
-import { useImage } from '@shopify/react-native-skia';
 import {
   useSharedValue,
   withTiming,
@@ -17,14 +24,16 @@ import {
   interpolate,
   Extrapolation,
   useAnimatedReaction,
+  runOnJS,
 } from 'react-native-reanimated';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const GRAVITY = 1000;
 const JUMP_FORCE = -500;
 
 const App = () => {
   const { width, height } = useWindowDimensions();
+  const [score, setScore] = useState(0);
   const bg = useImage(require('./assets/sprites/background-day.png'));
   const bird = useImage(require('./assets/sprites/yellowbird-upflap.png'));
   const pipeBottom = useImage(require('./assets/sprites/pipe-green.png'));
@@ -55,8 +64,8 @@ const App = () => {
         currentValue <= middle &&
         previousValue > middle
       ) {
-        console.log('score ++');
         //do some
+        runOnJS(setScore)(score + 1);
       }
     }
   );
@@ -89,6 +98,16 @@ const App = () => {
 
   const pipeOffset = 0;
 
+  const fontFamily = Platform.select({
+    ios: 'Halvetica',
+    default: 'serif',
+  });
+  const fontStyle = {
+    fontFamily,
+    fontSize: 40,
+    fontWeight: 'bold',
+  };
+  const font = matchFont(fontStyle);
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <GestureDetector gesture={gesture}>
@@ -129,6 +148,7 @@ const App = () => {
               fit={'contain'}
             />
           </Group>
+          <Text text={score.toString()} x={width / 2} y={100} font={font} />
         </Canvas>
       </GestureDetector>
     </GestureHandlerRootView>
