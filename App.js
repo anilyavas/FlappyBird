@@ -43,6 +43,9 @@ const App = () => {
   const x = useSharedValue(width);
   const birdY = useSharedValue(height / 3);
   const birdYVelocity = useSharedValue(0);
+  const birdPos = {
+    x: width / 4,
+  };
 
   useEffect(() => {
     x.value = withRepeat(
@@ -57,7 +60,7 @@ const App = () => {
   useAnimatedReaction(
     () => x.value,
     (currentValue, previousValue) => {
-      const middle = width / 2;
+      const middle = birdPos.x;
       if (
         currentValue != previousValue &&
         previousValue &&
@@ -141,7 +144,7 @@ const App = () => {
           <Group transform={birdTransfrom} origin={birdOrigin}>
             <Image
               image={bird}
-              x={width / 4}
+              x={birdPos.x}
               y={birdY}
               width={64}
               height={48}
