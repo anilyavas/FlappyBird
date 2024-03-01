@@ -32,7 +32,7 @@ const GRAVITY = 1000;
 const JUMP_FORCE = -500;
 
 const App = () => {
-  const { width, height } = useWindowDimensions();
+  const { height, width } = useWindowDimensions();
   const [score, setScore] = useState(0);
   const bg = useImage(require('./assets/sprites/background-day.png'));
   const bird = useImage(require('./assets/sprites/yellowbird-upflap.png'));
@@ -47,7 +47,7 @@ const App = () => {
     x: width / 4,
   };
 
-  useEffect(() => {
+  const moveTheMap = () => {
     x.value = withRepeat(
       withSequence(
         withTiming(-150, { duration: 3000, easing: Easing.linear }),
@@ -55,6 +55,9 @@ const App = () => {
       ),
       -1
     );
+  };
+  useEffect(() => {
+    moveTheMap();
   }, []);
   // scoring system
   useAnimatedReaction(
@@ -76,11 +79,9 @@ const App = () => {
   useAnimatedReaction(
     () => birdY.value,
     (currentValue, previousValue) => {
-      if (currentValue > height - 100) {
-        console.log('game over');
+      if (currentValue > height - 100 || currentValue < 0) {
         gameOver.value = true;
         // stopping map movement
-        cancelAnimation(x);
       }
     }
   );
@@ -105,6 +106,11 @@ const App = () => {
   const restartGame = () => {
     'worklet';
     birdY.value = height / 3;
+    birdYVelocity.value = 0;
+    gameOver.value = false;
+    x.value = width;
+    runOnJS(moveTheMap)();
+    runOnJS(setScore)(0);
   };
 
   const gesture = Gesture.Tap().onStart(() => {
