@@ -48,12 +48,8 @@ const App = () => {
     x: width / 4,
   };
 
-  const birdCenterX = useDerivedValue(() => {
-    x = birdPos.x;
-  });
-  const birdCenterY = useDerivedValue(() => {
-    y = birdY.value;
-  });
+  const birdCenterX = useDerivedValue(() => birdPos.x + 32);
+  const birdCenterY = useDerivedValue(() => birdY.value + 24);
 
   const moveTheMap = () => {
     x.value = withRepeat(
@@ -199,7 +195,7 @@ const App = () => {
               fit={'contain'}
             />
           </Group>
-          <Circle cx={birdCenterX.value.x} cy={birdCenterY.value.y} r={5} />
+          <Circle cx={birdCenterX} cy={birdCenterY} r={5} />
           <Text text={score.toString()} x={width / 2} y={100} font={font} />
         </Canvas>
       </GestureDetector>
