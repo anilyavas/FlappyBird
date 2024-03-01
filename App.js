@@ -60,14 +60,14 @@ const App = () => {
   });
 
   const obstacles = useDerivedValue(() => [
-    // bottom pipe
+    // top
     {
       x: pipeX.value,
       y: bottomPipeY.value,
       h: pipeHeight,
       w: pipeWidth,
     },
-    // top pipe
+    // bottom
     {
       x: pipeX.value,
       y: topPipeY.value,
@@ -91,13 +91,11 @@ const App = () => {
     );
   };
 
-  // Scoring system
   useAnimatedReaction(
     () => pipeX.value,
     (currentValue, previousValue) => {
       const middle = birdX;
 
-      // change offset for the position of the next gap
       if (previousValue && currentValue < -100 && previousValue > -100) {
         pipeOffset.value = Math.random() * 400 - 200;
         cancelAnimation(pipeX);
@@ -110,7 +108,6 @@ const App = () => {
         currentValue <= middle &&
         previousValue > middle
       ) {
-        // do something ✨
         runOnJS(setScore)(score + 1);
       }
     }
@@ -119,14 +116,13 @@ const App = () => {
   const isPointCollidingWithRect = (point, rect) => {
     'worklet';
     return (
-      point.x >= rect.x && // right of the left edge AND
-      point.x <= rect.x + rect.w && // left of the right edge AND
-      point.y >= rect.y && // below the top AND
-      point.y <= rect.y + rect.h // above the bottom
+      point.x >= rect.x &&
+      point.x <= rect.x + rect.w &&
+      point.y >= rect.y &&
+      point.y <= rect.y + rect.h
     );
   };
 
-  // Collision detection
   useAnimatedReaction(
     () => birdY.value,
     (currentValue, previousValue) => {
@@ -135,7 +131,6 @@ const App = () => {
         y: birdY.value + 24,
       };
 
-      // Ground collision detection
       if (currentValue > height - 100 || currentValue < 0) {
         gameOver.value = true;
       }
@@ -178,10 +173,8 @@ const App = () => {
 
   const gesture = Gesture.Tap().onStart(() => {
     if (gameOver.value) {
-      // restart
       restartGame();
     } else {
-      // jump
       birdYVelocity.value = JUMP_FORCE;
     }
   });
@@ -214,10 +207,8 @@ const App = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <GestureDetector gesture={gesture}>
         <Canvas style={{ width, height }}>
-          {/* BG */}
           <Image image={bg} width={width} height={height} fit={'cover'} />
 
-          {/* Pipes */}
           <Image
             image={pipeTop}
             y={topPipeY}
@@ -233,7 +224,6 @@ const App = () => {
             height={pipeHeight}
           />
 
-          {/* Base */}
           <Image
             image={base}
             width={width}
@@ -243,14 +233,10 @@ const App = () => {
             fit={'cover'}
           />
 
-          {/* Bird */}
           <Group transform={birdTransform} origin={birdOrigin}>
             <Image image={bird} y={birdY} x={birdX} width={64} height={48} />
           </Group>
 
-          {/* Sim */}
-
-          {/* Score */}
           <Text
             x={width / 2 - 30}
             y={100}
