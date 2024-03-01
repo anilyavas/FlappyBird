@@ -5,6 +5,7 @@ import {
   useImage,
   Text,
   matchFont,
+  Circle,
 } from '@shopify/react-native-skia';
 import { Platform, useWindowDimensions } from 'react-native';
 import {
@@ -47,6 +48,13 @@ const App = () => {
     x: width / 4,
   };
 
+  const birdCenterX = useDerivedValue(() => {
+    x = birdPos.x;
+  });
+  const birdCenterY = useDerivedValue(() => {
+    y = birdY.value;
+  });
+
   const moveTheMap = () => {
     x.value = withRepeat(
       withSequence(
@@ -82,6 +90,9 @@ const App = () => {
       if (currentValue > height - 100 || currentValue < 0) {
         gameOver.value = true;
         // stopping map movement
+      }
+      if (birdPos.x >= x.value) {
+        gameOver.value = true;
       }
     }
   );
@@ -188,6 +199,7 @@ const App = () => {
               fit={'contain'}
             />
           </Group>
+          <Circle cx={birdCenterX.value.x} cy={birdCenterY.value.y} r={5} />
           <Text text={score.toString()} x={width / 2} y={100} font={font} />
         </Canvas>
       </GestureDetector>
