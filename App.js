@@ -5,7 +5,6 @@ import {
   useImage,
   Text,
   matchFont,
-  Fill,
 } from '@shopify/react-native-skia';
 import { Platform, useWindowDimensions } from 'react-native';
 import {
@@ -25,6 +24,7 @@ import {
   Extrapolation,
   useAnimatedReaction,
   runOnJS,
+  cancelAnimation,
 } from 'react-native-reanimated';
 import { useEffect, useState } from 'react';
 
@@ -39,7 +39,7 @@ const App = () => {
   const pipeBottom = useImage(require('./assets/sprites/pipe-green.png'));
   const pipeTop = useImage(require('./assets/sprites/pipe-green-top.png'));
   const base = useImage(require('./assets/sprites/base.png'));
-
+  const gameOver = useSharedValue(false);
   const x = useSharedValue(width);
   const birdY = useSharedValue(height / 3);
   const birdYVelocity = useSharedValue(0);
@@ -56,7 +56,7 @@ const App = () => {
       -1
     );
   }, []);
-
+  // scoring system
   useAnimatedReaction(
     () => x.value,
     (currentValue, previousValue) => {
@@ -72,16 +72,47 @@ const App = () => {
       }
     }
   );
+  // Collision detection
+  useAnimatedReaction(
+    () => birdY.value,
+    (currentValue, previousValue) => {
+      if (currentValue > height - 100) {
+        console.log('game over');
+        gameOver.value = true;
+        // stopping map movement
+        cancelAnimation(x);
+      }
+    }
+  );
+  useAnimatedReaction(
+    () => gameOver.value,
+    (currentValue, previousValue) => {
+      if (currentValue && previousValue) {
+        // stopping map movement
+        cancelAnimation(x);
+      }
+    }
+  );
+
   useFrameCallback(({ timeSincePreviousFrame: dt }) => {
-    if (!dt) {
+    if (!dt || gameOver.value) {
       return;
     }
     birdY.value = birdY.value + (birdYVelocity.value * dt) / 1000;
     birdYVelocity.value = birdYVelocity.value + (GRAVITY * dt) / 1000;
   });
 
+  const restartGame = () => {
+    'worklet';
+    birdY.value = height / 3;
+  };
+
   const gesture = Gesture.Tap().onStart(() => {
-    birdYVelocity.value = JUMP_FORCE;
+    if (gameOver.value === true) {
+      restartGame();
+    } else {
+      birdYVelocity.value = JUMP_FORCE;
+    }
   });
   const birdTransfrom = useDerivedValue(() => {
     return [
