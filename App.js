@@ -6,6 +6,7 @@ import {
   Text,
   matchFont,
   Circle,
+  Rect,
 } from '@shopify/react-native-skia';
 import { Platform, useWindowDimensions } from 'react-native';
 import {
@@ -31,7 +32,8 @@ import { useEffect, useState } from 'react';
 
 const GRAVITY = 1000;
 const JUMP_FORCE = -500;
-
+const pipeWidth = 104;
+const pipeHeight = 640;
 const App = () => {
   const { height, width } = useWindowDimensions();
   const [score, setScore] = useState(0);
@@ -50,6 +52,25 @@ const App = () => {
 
   const birdCenterX = useDerivedValue(() => birdPos.x + 32);
   const birdCenterY = useDerivedValue(() => birdY.value + 24);
+  const pipeOffset = 0;
+  const obstacles = useDerivedValue(() => {
+    const allObstacles = [];
+    // add bottom pipe
+    allObstacles.push({
+      x: x.value,
+      y: pipeHeight,
+      h: height - 320 + pipeOffset,
+      w: pipeWidth,
+    });
+    // add top pipe
+    allObstacles.push({
+      x: x.value,
+      y: pipeOffset - 320,
+      h: pipeHeight,
+      w: pipeWidth,
+    });
+    return allObstacles;
+  });
 
   const moveTheMap = () => {
     x.value = withRepeat(
@@ -79,6 +100,15 @@ const App = () => {
       }
     }
   );
+  const isPointCollidingWithRect = (point, rect) => {
+    'worklet';
+    return (
+      point.x >= rect.x &&
+      point.x <= rect.x + rect.w &&
+      point.y >= rect.y &&
+      point.y <= rect.y + rect.h
+    );
+  };
   // Collision detection
   useAnimatedReaction(
     () => birdY.value,
@@ -87,7 +117,17 @@ const App = () => {
         gameOver.value = true;
         // stopping map movement
       }
-      if (birdPos.x >= x.value) {
+      const isColliding = obstacles.value.some((rect) =>
+        isPointCollidingWithRect(
+          { x: birdCenterX.value, y: birdCenterY.value },
+          rect
+        )
+      );
+      if (isColliding) {
+        gameOver.value = true;
+      }
+
+      if (birdCenterX.value >= x.value) {
         gameOver.value = true;
       }
     }
@@ -143,8 +183,6 @@ const App = () => {
     return { x: width / 4 + 32, y: birdY.value + 24 };
   });
 
-  const pipeOffset = 0;
-
   const fontFamily = Platform.select({
     ios: 'Halvetica',
     default: 'serif',
@@ -160,21 +198,20 @@ const App = () => {
       <GestureDetector gesture={gesture}>
         <Canvas style={{ width, height }}>
           <Image image={bg} width={width} height={height} fit={'cover'} />
-
           {/* Pipes */}
           <Image
             image={pipeTop}
             y={pipeOffset - 320}
             x={x}
-            width={103}
-            height={640}
+            width={pipeWidth}
+            height={pipeHeight}
           />
           <Image
             image={pipeBottom}
             y={height - 320 + pipeOffset}
             x={x}
-            width={103}
-            height={640}
+            width={pipeWidth}
+            height={pipeHeight}
           />
           {/* Ground */}
           <Image
@@ -195,7 +232,7 @@ const App = () => {
               fit={'contain'}
             />
           </Group>
-          <Circle cx={birdCenterX} cy={birdCenterY} r={5} />
+          {/*  <Circle cx={birdCenterX} cy={birdCenterY} r={15} color={'red'} /> */}
           <Text text={score.toString()} x={width / 2} y={100} font={font} />
         </Canvas>
       </GestureDetector>
